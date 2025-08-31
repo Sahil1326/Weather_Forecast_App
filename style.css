@@ -1,0 +1,31 @@
+body{ 
+    background:  #d6dff3; 
+ }
+  
+  h1{
+    text-align: center;
+    margin:20px;
+    text-shadow: 2px 2px 3px;
+  }
+
+
+ @media(max-width:640px){
+    body{
+      text-align:center;
+    }
+    #search{
+      display:inline;
+    }
+
+    #useLocation{
+      margin-top: 10px;;
+    }
+    .relative{
+      justify-content: center;
+      display:flex;
+      margin-top:20px;
+    }
+    #unitToggle{
+    margin-left:20px;
+    }
+  }
