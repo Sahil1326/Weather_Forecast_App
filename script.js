@@ -14,6 +14,9 @@
     const tempMain = document.getElementById('tempMain');
     const tempUnitMain = document.getElementById('tempUnitMain');
     const feelsLike = document.getElementById('feelsLike');
+    const windText = document.getElementById('windText');
+    const humidityText = document.getElementById('humidityText');
+    const pressureText = document.getElementById('pressureText');
     const useLocationBtn = document.getElementById('useLocation');
     const recentBtn = document.getElementById('recentBtn');
     const recentDropdown = document.getElementById('recentDropdown');
@@ -185,7 +188,10 @@
       conditionIcon.src = `https:${data.current.condition.icon}`;
       renderMainTemp(data);
       feelsLike.textContent = `Feels like ${data.current.feelslike_c}°C / ${data.current.feelslike_f}°F`;
-    
+      windText.textContent = `${data.current.wind_kph} kph ${data.current.wind_dir}`;
+      humidityText.textContent = `${data.current.humidity}%`;
+      pressureText.textContent = `${data.current.pressure_mb} mb`;
+     
     }
 
     function renderMainTemp(data){
@@ -200,8 +206,6 @@
         tempUnitMain.textContent = '°F';
        }
     }
-
-  
 
     // handle API errors globally (simple wrapper)
     window.addEventListener('error', (e)=>{ 
