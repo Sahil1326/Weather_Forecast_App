@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Weather App</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body class=" text-white">
+  <h1 class="text-3xl text-black ">Today Weather</h1>
+  <div class="container mx-auto p-4 max-w-3xl">
+    <!-- Header / Search -->
+    <div class="flex gap-2 items-center mb-4" id="search" >
+      <input id="cityInput" type="text" placeholder="Search city..."
+        class="flex-1 p-2 rounded bg-white text-white placeholder-gray-300 focus:outline-none"/>
+      <button id="searchBtn" class="px-4 py-2 bg-blue-600 rounded hover:bg-yellow-600 hover:text-2xl">Search</button>
+      <div>
+      <button id="useLocation" class="px-3 py-2 bg-green-600 rounded hover:bg-green-900 hover:text-2xl">use my location📍</button>
+      </div>
+      <div class="relative">
+        <button id="recentBtn" class="px-3 py-2 bg-gray-400 rounded">Recent <span id="recentCount">(0)</span></button>
+        <div id="recentDropdown" class="absolute right-0 mt-2 w-48 text-black bg-transparent rounded shadow hidden p-2 z-10"></div>
+      
+      <button id="unitToggle" class="px-3 py-2 bg-purple-600 rounded hover:bg-amber-900">°C</button>
+    </div>
+  </div>
+  
+   
+
+    <!-- Weather Container -->
+    <div id="weatherContainer" class="invisible space-y-4">
+      <!-- Today weather-->
+      <div id="todayCard" class="p-4 rounded-xl bg-white/10 shadow-lg flex flex-col gap-4">
+        <div>
+          <h2 id="locationName" class="text-xl font-bold"></h2>
+          <p id="localTime" class="text-sm text-gray-300"></p>
+        </div>
+        <div class="flex items-center gap-4">
+          <img id="conditionIcon" src="" alt="condition" class="w-16 h-16"/>
+          <div>
+            <div class="flex items-end gap-1 text-4xl font-bold">
+              <span id="tempMain"></span><span id="tempUnitMain"></span>
+            </div>
+            <p id="conditionText" class="text-lg"></p>
+            <p id="feelsLike" class="text-sm text-gray-300"></p>
+          </div>
+        </div>
+        <div class="grid grid-cols-3 gap-2 text-sm">
+          <div>💨 <span id="windText"></span></div>
+          <div>💧 <span id="humidityText"></span></div>
+          <div>🔽 <span id="pressureText"></span></div>
+        </div>
+      </div>
+      
+
+    
+    </div>
+  </div>
+  <script src="script.js"></script>
+</body>
+</html>
