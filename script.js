@@ -4,6 +4,20 @@
     // DOM refs
     const cityInput = document.getElementById('cityInput');
     const searchBtn = document.getElementById('searchBtn');
+    const weatherContainer = document.getElementById('weatherContainer');
+    const todayCard = document.getElementById('todayCard');
+    const localTime = document.getElementById('localTime');
+  
+    function debounce(fn, wait=300){ 
+      let t; 
+      return (...args)=>{ 
+        clearTimeout(t); 
+       t=setTimeout(()=>fn(...args), wait);
+     }; 
+    }
+
+  
+
     // to search a city and provide city name
     searchBtn.addEventListener('click', ()=> doSearch(cityInput.value.trim()));
     cityInput.addEventListener('keyup', (e)=>{ 
