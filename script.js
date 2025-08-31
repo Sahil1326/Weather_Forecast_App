@@ -13,13 +13,14 @@
     const conditionIcon = document.getElementById('conditionIcon');
     const tempMain = document.getElementById('tempMain');
     const tempUnitMain = document.getElementById('tempUnitMain');
+    const feelsLike = document.getElementById('feelsLike');
     const useLocationBtn = document.getElementById('useLocation');
     const recentBtn = document.getElementById('recentBtn');
     const recentDropdown = document.getElementById('recentDropdown');
     const recentCount = document.getElementById('recentCount');
    const popupHolder = document.getElementById('popupHolder');
     const unitToggle = document.getElementById('unitToggle');
-   
+    const alertArea = document.getElementById('alertArea');
 
     // state
     let recent = JSON.parse(localStorage.getItem('weather:recent') || '[]');
@@ -180,7 +181,11 @@
       weatherContainer.classList.remove('invisible');
       locationName.textContent = `${data.location.name}, ${data.location.region || data.location.country}`;
       localTime.textContent = `Local: ${data.location.localtime}`;
-     
+      conditionText.textContent = data.current.condition.text;
+      conditionIcon.src = `https:${data.current.condition.icon}`;
+      renderMainTemp(data);
+      feelsLike.textContent = `Feels like ${data.current.feelslike_c}°C / ${data.current.feelslike_f}°F`;
+    
     }
 
     function renderMainTemp(data){
@@ -196,6 +201,7 @@
        }
     }
 
+  
 
     // handle API errors globally (simple wrapper)
     window.addEventListener('error', (e)=>{ 
