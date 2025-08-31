@@ -7,16 +7,20 @@
     const suggestions = document.getElementById('suggestions');
     const weatherContainer = document.getElementById('weatherContainer');
     const todayCard = document.getElementById('todayCard');
+    const locationName = document.getElementById('locationName');
     const localTime = document.getElementById('localTime');
     const conditionText = document.getElementById('conditionText');
     const conditionIcon = document.getElementById('conditionIcon');
     const tempMain = document.getElementById('tempMain');
     const tempUnitMain = document.getElementById('tempUnitMain');
+    const useLocationBtn = document.getElementById('useLocation');
     const recentBtn = document.getElementById('recentBtn');
     const recentDropdown = document.getElementById('recentDropdown');
     const recentCount = document.getElementById('recentCount');
    const popupHolder = document.getElementById('popupHolder');
     const unitToggle = document.getElementById('unitToggle');
+   
+
     // state
     let recent = JSON.parse(localStorage.getItem('weather:recent') || '[]');
     let currentData = null; // store last fetched response
@@ -158,11 +162,23 @@
       updateRecentUI();
     }
 
-   
+    // current location
+    useLocationBtn.addEventListener('click', ()=>{
+      if(!navigator.geolocation){ showError('Geolocation not supported in your browser.'); 
+        return; 
+      }
+      navigator.geolocation.getCurrentPosition(async (pos)=>{
+        const {latitude, longitude} = pos.coords;
+        doSearch(`${latitude},${longitude}`);
+      }, (err)=>{ showError('Could not access location.');
+
+       }, {timeout:10000});
+    });
 
     // render functions
     function renderAll(data){
       weatherContainer.classList.remove('invisible');
+      locationName.textContent = `${data.location.name}, ${data.location.region || data.location.country}`;
       localTime.textContent = `Local: ${data.location.localtime}`;
      
     }
@@ -180,7 +196,6 @@
        }
     }
 
-   
 
     // handle API errors globally (simple wrapper)
     window.addEventListener('error', (e)=>{ 
