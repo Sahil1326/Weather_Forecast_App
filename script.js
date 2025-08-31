@@ -12,8 +12,16 @@
     const conditionIcon = document.getElementById('conditionIcon');
     const tempMain = document.getElementById('tempMain');
     const tempUnitMain = document.getElementById('tempUnitMain');
+    const recentBtn = document.getElementById('recentBtn');
+    const recentDropdown = document.getElementById('recentDropdown');
+    const recentCount = document.getElementById('recentCount');
    const popupHolder = document.getElementById('popupHolder');
     const unitToggle = document.getElementById('unitToggle');
+    // state
+    let recent = JSON.parse(localStorage.getItem('weather:recent') || '[]');
+    let currentData = null; // store last fetched response
+    let preferUnit = 'C'; // 'C' or 'F' - only affects today's main display as requested
+
     // Utils
     function showPopup(message, kind='info', timeout=5000){
       const el = document.createElement('div');
@@ -27,7 +35,36 @@
       showPopup(message, 'error', 6000);
     }
 
-  
+    function updateRecentUI(){
+      recentCount.textContent = `(${recent.length})`;
+      if(!recent.length){ 
+        recentDropdown.innerHTML = '<div class="text-slate-300 text-sm p-2">No recent searches</div>'; 
+        return;
+       }
+      recentDropdown.innerHTML = '';
+      recent.slice().reverse().forEach(city=>{
+        const btn = document.createElement('button');
+        btn.className = 'w-full text-left p-2 hover:bg-white/5 rounded-sm';
+        btn.textContent = city;
+        btn.onclick = ()=> doSearch(city);
+        recentDropdown.appendChild(btn);
+      });
+      const clear = document.createElement('button');
+      clear.className='w-full text-left p-2 mt-2 bg-red-600 rounded-sm';
+      clear.textContent='Clear recent';
+      clear.onclick = ()=>{ 
+        localStorage.removeItem('weather:recent'); 
+        recent = []; 
+        updateRecentUI(); 
+      }
+      recentDropdown.appendChild(clear);
+    }
+
+    // toggle recent dropdown
+    recentBtn.addEventListener('click', ()=>{
+      recentDropdown.classList.toggle('hidden');
+    });
+
     // unit toggle
     unitToggle.addEventListener('click', ()=>{
       preferUnit = (preferUnit === 'C') ? 'F' : 'C';
@@ -102,7 +139,8 @@
         }
         const data = await res.json();
         currentData = data;
-      
+        // save recent
+        addToRecent(q);
         renderAll(data);
       }catch(err){ 
         console.error(err); 
@@ -111,11 +149,22 @@
       }
     }
 
+   function addToRecent(q){
+      const existing = recent.indexOf(q);
+      if(existing !== -1) recent.splice(existing,1);
+      recent.push(q);
+      if(recent.length>8) recent.shift();
+      localStorage.setItem('weather:recent', JSON.stringify(recent));
+      updateRecentUI();
+    }
+
    
+
     // render functions
     function renderAll(data){
       weatherContainer.classList.remove('invisible');
       localTime.textContent = `Local: ${data.location.localtime}`;
+     
     }
 
     function renderMainTemp(data){
@@ -132,6 +181,7 @@
     }
 
    
+
     // handle API errors globally (simple wrapper)
     window.addEventListener('error', (e)=>{ 
       console.error(e); 
@@ -139,7 +189,7 @@
     });
 
     
-   // updateRecentUI();
+    updateRecentUI();
 
     // Accessibility: simple keyboard nav for suggestions
     cityInput.addEventListener('keydown', (e)=>{
