@@ -27,6 +27,15 @@
       showPopup(message, 'error', 6000);
     }
 
+  
+    // unit toggle
+    unitToggle.addEventListener('click', ()=>{
+      preferUnit = (preferUnit === 'C') ? 'F' : 'C';
+      unitToggle.textContent = preferUnit==='C' ? '°C' : '°F';
+      // update only today's main temperature
+      if(currentData) renderMainTemp(currentData);
+    });
+
     function debounce(fn, wait=300){ 
       let t; 
       return (...args)=>{ 
@@ -102,12 +111,11 @@
       }
     }
 
-
+   
     // render functions
     function renderAll(data){
-      weatherContainer.classList.remove('invisible'); 
+      weatherContainer.classList.remove('invisible');
       localTime.textContent = `Local: ${data.location.localtime}`;
-    
     }
 
     function renderMainTemp(data){
@@ -123,6 +131,15 @@
        }
     }
 
+   
+    // handle API errors globally (simple wrapper)
+    window.addEventListener('error', (e)=>{ 
+      console.error(e); 
+      showError('Unexpected error occurred'); 
+    });
+
+    
+   // updateRecentUI();
 
     // Accessibility: simple keyboard nav for suggestions
     cityInput.addEventListener('keydown', (e)=>{
