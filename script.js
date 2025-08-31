@@ -4,10 +4,29 @@
     // DOM refs
     const cityInput = document.getElementById('cityInput');
     const searchBtn = document.getElementById('searchBtn');
+    const suggestions = document.getElementById('suggestions');
     const weatherContainer = document.getElementById('weatherContainer');
     const todayCard = document.getElementById('todayCard');
     const localTime = document.getElementById('localTime');
-  
+    const conditionText = document.getElementById('conditionText');
+    const conditionIcon = document.getElementById('conditionIcon');
+    const tempMain = document.getElementById('tempMain');
+    const tempUnitMain = document.getElementById('tempUnitMain');
+   const popupHolder = document.getElementById('popupHolder');
+    const unitToggle = document.getElementById('unitToggle');
+    // Utils
+    function showPopup(message, kind='info', timeout=5000){
+      const el = document.createElement('div');
+      el.className = `p-3 rounded-md mb-2 ${kind==='error'? 'bg-red-600' : 'bg-black/60'} text-white shadow-lg`;
+      el.textContent = message;
+      popupHolder.appendChild(el);
+      setTimeout(()=> el.remove(), timeout);
+    }
+
+    function showError(message){
+      showPopup(message, 'error', 6000);
+    }
+
     function debounce(fn, wait=300){ 
       let t; 
       return (...args)=>{ 
@@ -16,7 +35,44 @@
      }; 
     }
 
-  
+    // it is for autosuggest to search city
+    async function fetchSuggestions(q){
+      if(!q) { suggestions.classList.add('hidden'); suggestions.innerHTML=''; 
+        return; 
+      }
+      try{
+        const res = await fetch(`${BASE}/search.json?key=${API_KEY}&q=${encodeURIComponent(q)}`);
+        if(!res.ok) throw new Error('Failed to fetch suggestions');
+        const data = await res.json();
+        renderSuggestions(data);
+      }catch(e){ 
+        console.error(e); 
+      }
+    }
+
+    function renderSuggestions(list){
+      suggestions.innerHTML = '';
+      if(!list || !list.length){ 
+        suggestions.classList.add('hidden'); 
+        return; 
+      }
+      list.slice(0,8).forEach(it=>{
+        const li = document.createElement('li');
+        li.className = 'p-2 hover:bg-white/5 cursor-pointer flex justify-between items-center';
+        li.innerHTML = `<div><strong>${it.name}</strong> <span class="text-slate-300 text-sm">${it.region?(', '+it.region):''} ${it.country?(', '+it.country):''}</span></div>`;
+        li.onclick = ()=>{ 
+          cityInput.value = `${it.name}${it.region? ', '+it.region: ''}${it.country? ', '+it.country: ''}`;
+           suggestions.classList.add('hidden'); doSearch(cityInput.value); 
+          };
+        suggestions.appendChild(li);
+      });
+      suggestions.classList.remove('hidden');
+    }
+
+    cityInput.addEventListener('input', debounce((e)=> fetchSuggestions(e.target.value), 300));
+    document.addEventListener('click', (e)=>{ 
+      if(!e.target.closest('#suggestions') && !e.target.closest('#cityInput')) suggestions.classList.add('hidden'); 
+    });
 
     // to search a city and provide city name
     searchBtn.addEventListener('click', ()=> doSearch(cityInput.value.trim()));
@@ -28,7 +84,7 @@
 
       }
       try{
-       // showPopup('Loading…');
+        showPopup('Loading…');
         const url = `${BASE}/forecast.json?key=${API_KEY}&q=${encodeURIComponent(q)}&days=5&aqi=no&alerts=no`;
         const res = await fetch(url);
         if(!res.ok){ 
@@ -37,8 +93,7 @@
         }
         const data = await res.json();
         currentData = data;
-        // save recent
-      //  addToRecent(q);
+      
         renderAll(data);
       }catch(err){ 
         console.error(err); 
@@ -47,13 +102,25 @@
       }
     }
 
-  
 
     // render functions
     function renderAll(data){
-      weatherContainer.classList.remove('invisible');
+      weatherContainer.classList.remove('invisible'); 
       localTime.textContent = `Local: ${data.location.localtime}`;
-     
+    
+    }
+
+    function renderMainTemp(data){
+      const c = data.current.temp_c;
+      const f = data.current.temp_f;
+      if(preferUnit === 'C'){ 
+        tempMain.textContent = Math.round(c); 
+        tempUnitMain.textContent = '°C'; 
+      }
+      else { 
+        tempMain.textContent = Math.round(f); 
+        tempUnitMain.textContent = '°F';
+       }
     }
 
 
