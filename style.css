@@ -29,3 +29,19 @@ body{
     margin-left:20px;
     }
   }
+
+     #suggestiobody { 
+      transition: background 0.5s ease; 
+    }
+    body.sunny { 
+      background: linear-gradient(to bottom, #f46716, #fbbf24); 
+    }
+    body.cloudy {
+       background: linear-gradient(to bottom, #3866a1, #6b7280);
+       }
+    body.rainy {
+       background: linear-gradient(to bottom, #343d4b, #1e3a8a);
+       }
+    body.snowns li.active { 
+      background-color: rgba(224, 219, 219, 0.898);
+     }
