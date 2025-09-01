@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Weather App</title>
-  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="./output.css" rel="stylesheet">
   <link rel="stylesheet" href="style.css">
 </head>
 <body class=" text-white">
@@ -13,7 +13,7 @@
     <!-- Header / Search -->
     <div class="flex gap-2 items-center mb-4" id="search" >
       <input id="cityInput" type="text" placeholder="Search city..."
-        class="flex-1 p-2 rounded bg-white text-white placeholder-gray-300 focus:outline-none"/>
+        class="flex-1 p-2 rounded bg-white text-black placeholder-gray-300 focus:outline-none"/>
       <button id="searchBtn" class="px-4 py-2 bg-blue-600 rounded hover:bg-yellow-600 hover:text-2xl">Search</button>
       <div>
       <button id="useLocation" class="px-3 py-2 bg-green-600 rounded hover:bg-green-900 hover:text-2xl">use my location📍</button>
