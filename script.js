@@ -1,4 +1,4 @@
- const API_KEY = 'caf43028648b40fe86b103215252508'; // My API
+ API_KEY = 'caf43028648b40fe86b103215252508'; // My API
     const BASE = 'https://api.weatherapi.com/v1';
 
     // DOM refs
@@ -14,6 +14,8 @@
     const tempMain = document.getElementById('tempMain');
     const tempUnitMain = document.getElementById('tempUnitMain');
     const feelsLike = document.getElementById('feelsLike');
+    const hourlyList = document.getElementById('hourlyList');
+    const forecastList = document.getElementById('forecastList');
     const windText = document.getElementById('windText');
     const humidityText = document.getElementById('humidityText');
     const pressureText = document.getElementById('pressureText');
@@ -139,7 +141,7 @@
       }
       try{
         showPopup('Loading…');
-        const url = `${BASE}/forecast.json?key=${API_KEY}&q=${encodeURIComponent(q)}&days=5&aqi=no&alerts=no`;
+     const url = `${BASE}/forecast.json?key=${API_KEY}&q=${encodeURIComponent(q)}&days=5&aqi=no&alerts=no`;
         const res = await fetch(url);
         if(!res.ok){ 
           if(res.status===400) throw new Error('Invalid location'); 
@@ -191,7 +193,9 @@
       windText.textContent = `${data.current.wind_kph} kph ${data.current.wind_dir}`;
       humidityText.textContent = `${data.current.humidity}%`;
       pressureText.textContent = `${data.current.pressure_mb} mb`;
-     
+      renderHourly(data.forecast.forecastday[0].hour);
+      renderForecast(data.forecast.forecastday);
+      checkAlertsAndExtreme(data);
     }
 
     function renderMainTemp(data){
@@ -205,6 +209,66 @@
         tempMain.textContent = Math.round(f); 
         tempUnitMain.textContent = '°F';
        }
+    }
+
+    // show by hourly
+    function renderHourly(hours){
+      hourlyList.innerHTML = '';
+      hours.forEach(h =>{
+        const card = document.createElement('div');
+        card.className = 'min-w-[110px] p-2 rounded-md bg-white/5 flex flex-col items-center gap-2';
+        const time = new Date(h.time).toLocaleTimeString([], {hour: 'numeric', minute:'numeric'});
+        card.innerHTML = `<div class="text-xs">${time}</div>
+                          <img src="https:${h.condition.icon}" alt="" class="w-10 h-10"/>
+                          <div class="font-semibold">${Math.round(h.temp_c)}°C</div>
+                          <div class="text-xs">${h.wind_kph} kph</div>`;
+        hourlyList.appendChild(card);
+      });
+    }
+// dhow weather for days
+    function renderForecast(days){
+      forecastList.innerHTML = '';
+      days.forEach(d=>{
+        const date = new Date(d.date).toLocaleDateString();
+        const card = document.createElement('div');
+        card.className = 'p-3 rounded-md bg-white/5 flex items-center gap-3 justify-between';
+        card.innerHTML = `
+          <div>
+            <div class="font-semibold">${date}</div>
+            <div class="text-sm text-slate-200">${d.day.condition.text}</div>
+          </div>
+          <div class="flex items-center gap-3">
+            <img src="https:${d.day.condition.icon}" class="w-14 h-14" alt=""/>
+            <div class="text-right">
+              <div class="font-bold">${Math.round(d.day.avgtemp_c)}°C</div>
+              <div class="text-xs">Wind ${d.day.maxwind_kph} kph</div>
+              <div class="text-xs">Humidity ${d.day.avghumidity}%</div>
+            </div>
+          </div>`;
+        forecastList.appendChild(card);
+      });
+    }
+
+    function checkAlertsAndExtreme(data){
+      alertArea.innerHTML = '';
+      // Extreme temp: > 40°C
+      const tempC = data.current.temp_c;
+      if(tempC >= 40){
+        const el = document.createElement('div');
+        el.className = 'p-3 rounded-md bg-amber-600 text-black';
+        el.textContent = 'Heat Alert — temperature is above 40°C. Take precautions!';
+        alertArea.appendChild(el);
+      }
+
+      // weather alerts from API if any (WeatherAPI supports alerts in some responses but we disabled earlier)
+      if(data.alerts && data.alerts.alert && data.alerts.alert.length){
+        data.alerts.alert.forEach(a=>{
+          const el = document.createElement('div');
+          el.className = 'p-3 rounded-md bg-red-700 text-white mt-2';
+          el.innerHTML = `<strong>${a.headline}</strong><div>${a.desc || ''}</div>`;
+          alertArea.appendChild(el);
+        });
+      }
     }
 
     // handle API errors globally (simple wrapper)
