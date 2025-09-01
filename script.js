@@ -1,4 +1,4 @@
- API_KEY = 'caf43028648b40fe86b103215252508'; // My API
+ const API_KEY = 'caf43028648b40fe86b103215252508'; // My API
     const BASE = 'https://api.weatherapi.com/v1';
 
     // DOM refs
@@ -141,7 +141,7 @@
       }
       try{
         showPopup('Loading…');
-     const url = `${BASE}/forecast.json?key=${API_KEY}&q=${encodeURIComponent(q)}&days=5&aqi=no&alerts=no`;
+        const url = `${BASE}/forecast.json?key=${API_KEY}&q=${encodeURIComponent(q)}&days=7&aqi=no&alerts=no`;
         const res = await fetch(url);
         if(!res.ok){ 
           if(res.status===400) throw new Error('Invalid location'); 
@@ -184,6 +184,7 @@
     // render functions
     function renderAll(data){
       weatherContainer.classList.remove('invisible');
+      setBackgroundFor(data.current.condition.text);
       locationName.textContent = `${data.location.name}, ${data.location.region || data.location.country}`;
       localTime.textContent = `Local: ${data.location.localtime}`;
       conditionText.textContent = data.current.condition.text;
@@ -269,6 +270,15 @@
           alertArea.appendChild(el);
         });
       }
+    }
+    // use for changing background according to the condition
+     function setBackgroundFor(condition){
+      const cond = condition.toLowerCase();
+      document.body.classList.remove('rainy','cloudy','sunny','snow');
+      if(cond.includes('rain') || cond.includes('drizzle') || cond.includes('shower')) document.body.classList.add('rainy');
+      else if(cond.includes('cloud')) document.body.classList.add('cloudy');
+      else if(cond.includes('snow') || cond.includes('sleet') || cond.includes('blizzard')) document.body.classList.add('snow');
+      else document.body.classList.add('sunny');
     }
 
     // handle API errors globally (simple wrapper)
